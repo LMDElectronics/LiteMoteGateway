@@ -285,7 +285,7 @@
             this.textBox_Destination_Node.Name = "textBox_Destination_Node";
             this.textBox_Destination_Node.Size = new System.Drawing.Size(39, 20);
             this.textBox_Destination_Node.TabIndex = 3;
-            this.textBox_Destination_Node.Text = "10";
+            this.textBox_Destination_Node.Text = "1";
             this.textBox_Destination_Node.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_Destination_Node_KeyPress);
             // 
             // textBox_Origin_Node

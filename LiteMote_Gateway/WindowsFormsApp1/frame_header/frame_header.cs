@@ -11,8 +11,8 @@ namespace WindowsFormsApp1.frame_header
     [StructLayout(LayoutKind.Sequential,Pack = 1)]
     public struct Header
     {
-        public ushort origin_node;
-        public ushort destination_node;
+        public byte origin_node;
+        public byte destination_node;
         public ushort send_time;
         public ushort msg_type;
         public byte payload_length;

@@ -125,13 +125,13 @@ namespace WindowsFormsApp1
         {
             string data_out;
 
-            byte[] array_data_origin_node = new byte[2];
-            byte[] array_data_destination_node = new byte[2];
+            byte data_origin_node;
+            byte data_destination_node;
             byte[] array_data_send_time = new byte[2];
             byte[] array_data_msg_type = new byte[2];
             byte[] array_payload_lenght = new byte[2];
 
-            byte[] data_header_array = new byte[array_data_origin_node.Length + array_data_destination_node.Length + array_data_send_time.Length + array_data_msg_type.Length + 1];
+            byte[] data_header_array = new byte[/*array_data_origin_node*/ 1 + /*array_data_destination_node*/ 1 + array_data_send_time.Length + array_data_msg_type.Length + 1];
             byte[] data_payload_array;
 
             bool data_overflow_error = false;
@@ -156,7 +156,7 @@ namespace WindowsFormsApp1
                     }
                     else
                     {
-                        header_serial_data.origin_node = ushort.Parse(textBox_Origin_Node.Text);
+                        header_serial_data.origin_node = byte.Parse(textBox_Origin_Node.Text);
                     }
 
                     if (UInt32.Parse(textBox_Destination_Node.Text) > 0xffff)
@@ -166,7 +166,7 @@ namespace WindowsFormsApp1
                     }
                     else
                     {
-                        header_serial_data.destination_node = ushort.Parse(textBox_Destination_Node.Text);
+                        header_serial_data.destination_node = byte.Parse(textBox_Destination_Node.Text);
                     }
 
                     if (UInt32.Parse(textBox_Send_Time.Text) > 0xffff)
@@ -206,11 +206,8 @@ namespace WindowsFormsApp1
                     {                       
 
                         //arrange data to send it properly via serial port
-                        array_data_origin_node = BitConverter.GetBytes(header_serial_data.origin_node);
-                        Array.Reverse(array_data_origin_node); //big endian data
-
-                        array_data_destination_node = BitConverter.GetBytes(header_serial_data.destination_node);
-                        Array.Reverse(array_data_destination_node); //big endian data
+                        data_origin_node = header_serial_data.origin_node;
+                        data_destination_node = header_serial_data.destination_node;
 
                         array_data_send_time = BitConverter.GetBytes(header_serial_data.send_time);
                         Array.Reverse(array_data_send_time); //big endian data
@@ -222,11 +219,13 @@ namespace WindowsFormsApp1
                         Array.Reverse(array_payload_lenght); //big endian data
 
                         //copy data collected from text box to header array
-                        System.Buffer.BlockCopy(array_data_origin_node, 0, data_header_array, 0, array_data_origin_node.Length);
-                        System.Buffer.BlockCopy(array_data_destination_node, 0, data_header_array, array_data_origin_node.Length, array_data_destination_node.Length);
-                        System.Buffer.BlockCopy(array_data_send_time, 0, data_header_array, array_data_origin_node.Length + array_data_destination_node.Length, array_data_send_time.Length);
-                        System.Buffer.BlockCopy(array_data_msg_type, 0, data_header_array, array_data_origin_node.Length + array_data_destination_node.Length + array_data_send_time.Length, 2);
-                        System.Buffer.BlockCopy(array_payload_lenght, 1, data_header_array, array_data_origin_node.Length + array_data_destination_node.Length + array_data_send_time.Length + array_data_msg_type.Length, 1);
+                        data_header_array[ComDef.INDEX_HEADER_ORIGIN_ADDRESS] = data_origin_node;
+                        data_header_array[ComDef.INDEX_HEADER_DESTINATION_ADDRESS] = data_destination_node;
+                        data_header_array[ComDef.INDEX_HEADER_SEND_TIME_MSB] = array_data_send_time[0];
+                        data_header_array[ComDef.INDEX_HEADER_SEND_TIME_LSB] = array_data_send_time[1];
+                        data_header_array[ComDef.INDEX_HEADER_MSG_TYPE_MSB] = array_data_msg_type[0];
+                        data_header_array[ComDef.INDEX_HEADER_MSG_TYPE_LSB] = array_data_msg_type[1];
+                        data_header_array[ComDef.INDEX_HEADER_PAYLOAD] = array_payload_lenght[1];
 
                         byte[] array_to_send = new byte[data_header_array.Length + data_payload_array.Length ]; 
                         byte[] array_to_send_plus_crc = new byte[array_to_send.Length + 2];
@@ -319,26 +318,21 @@ namespace WindowsFormsApp1
 
                 //Process packet received
                 //save header received
-                header_rx_serial_data.origin_node = textAsBytes[0];
-                header_rx_serial_data.origin_node <<= 8;
-                header_rx_serial_data.origin_node |= textAsBytes[1];
+                header_rx_serial_data.origin_node = textAsBytes[ComDef.INDEX_HEADER_ORIGIN_ADDRESS];
+                header_rx_serial_data.destination_node = textAsBytes[ComDef.INDEX_HEADER_DESTINATION_ADDRESS];
 
-                header_rx_serial_data.destination_node = textAsBytes[2];
-                header_rx_serial_data.destination_node <<= 8;
-                header_rx_serial_data.destination_node |= textAsBytes[3];
-
-                header_rx_serial_data.send_time = textAsBytes[4];
+                header_rx_serial_data.send_time = textAsBytes[ComDef.INDEX_HEADER_SEND_TIME_MSB];
                 header_rx_serial_data.send_time <<= 8;
-                header_rx_serial_data.send_time |= textAsBytes[5];
+                header_rx_serial_data.send_time |= textAsBytes[ComDef.INDEX_HEADER_SEND_TIME_LSB];
 
-                header_rx_serial_data.msg_type = textAsBytes[6];
+                header_rx_serial_data.msg_type = textAsBytes[ComDef.INDEX_HEADER_MSG_TYPE_MSB];
                 header_rx_serial_data.msg_type <<= 8;
-                header_rx_serial_data.msg_type |= textAsBytes[7];
+                header_rx_serial_data.msg_type |= textAsBytes[ComDef.INDEX_HEADER_MSG_TYPE_LSB];
 
-                header_rx_serial_data.payload_length = textAsBytes[8];
+                header_rx_serial_data.payload_length = textAsBytes[ComDef.INDEX_HEADER_PAYLOAD];
 
                 //save payload received
-                int j = 9;
+                int j = 7;
                 for(int i = 0; i < header_rx_serial_data.payload_length; i++)
                 {
                     dataPayload.Add(textAsBytes[j++]); 
@@ -527,16 +521,14 @@ namespace WindowsFormsApp1
 
             //building message
             header_serial_data.origin_node = ComDef.HOST;
-            header_serial_data.destination_node = ushort.Parse(textBox_Identity_NodeID.Text);
+            header_serial_data.destination_node = byte.Parse(textBox_Identity_NodeID.Text);
             header_serial_data.send_time = ComDef.SECOND_SEND_TIME;
             header_serial_data.msg_type = ComDef.MSG_TYPE_SEND_IDENTITY;
             header_serial_data.payload_length = ComDef.MSG_TYPE_SEND_IDENTITY_PAYLOAD_LENGTH;
 
             //fill header
-            msg.Add((byte)((header_serial_data.origin_node) >> 8));
-            msg.Add((byte)((header_serial_data.origin_node) & 0x00FF));
-            msg.Add((byte)((header_serial_data.destination_node) >> 8));
-            msg.Add((byte)((header_serial_data.destination_node) & 0x00FF));
+            msg.Add((byte)(header_serial_data.origin_node));
+            msg.Add((byte)(header_serial_data.destination_node));
             msg.Add((byte)((header_serial_data.send_time) >> 8));
             msg.Add((byte)((header_serial_data.send_time) & 0x00FF));
             msg.Add((byte)((header_serial_data.msg_type) >> 8));
@@ -588,16 +580,14 @@ namespace WindowsFormsApp1
 
             //building message
             header_serial_data.origin_node = ComDef.HOST;
-            header_serial_data.destination_node =  Convert.ToUInt16(textBox_Identity_NodeID.Text);
+            header_serial_data.destination_node =  Convert.ToByte(textBox_Identity_NodeID.Text);
             header_serial_data.send_time = ComDef.SECOND_SEND_TIME;
             header_serial_data.msg_type = ComDef.MSG_TYPE_RETRIEVE_IDENTITY;
             header_serial_data.payload_length = ComDef.MSG_TYPE_RETRIEVE_IDENTITY_PAYLOAD_LENGTH;
 
             //fill header
-            msg.Add((byte)((header_serial_data.origin_node) >> 8));
-            msg.Add((byte)((header_serial_data.origin_node) & 0x00FF));
-            msg.Add((byte)((header_serial_data.destination_node) >> 8));
-            msg.Add((byte)((header_serial_data.destination_node) & 0x00FF));
+            msg.Add((byte)(header_serial_data.origin_node));
+            msg.Add((byte)(header_serial_data.destination_node));
             msg.Add((byte)((header_serial_data.send_time) >> 8));
             msg.Add((byte)((header_serial_data.send_time) & 0x00FF));
             msg.Add((byte)((header_serial_data.msg_type) >> 8));
@@ -620,16 +610,14 @@ namespace WindowsFormsApp1
 
             //building message
             header_serial_data.origin_node = ComDef.HOST;
-            header_serial_data.destination_node = Convert.ToUInt16(textBox_Identity_NodeID.Text);
+            header_serial_data.destination_node = Convert.ToByte(textBox_Identity_NodeID.Text);
             header_serial_data.send_time = ComDef.SECOND_SEND_TIME;
             header_serial_data.msg_type = ComDef.MSG_TYPE_SEND_HEALTH_CONF;
             header_serial_data.payload_length = ComDef.MSG_TYPE_SEND_HEALTH_CONF_PAYLOAD_LENGHT;
 
             //fill header
-            msg.Add((byte)((header_serial_data.origin_node) >> 8));
-            msg.Add((byte)((header_serial_data.origin_node) & 0x00FF));
-            msg.Add((byte)((header_serial_data.destination_node) >> 8));
-            msg.Add((byte)((header_serial_data.destination_node) & 0x00FF));
+            msg.Add((byte)(header_serial_data.origin_node));
+            msg.Add((byte)(header_serial_data.destination_node));
             msg.Add((byte)((header_serial_data.send_time) >> 8));
             msg.Add((byte)((header_serial_data.send_time) & 0x00FF));
             msg.Add((byte)((header_serial_data.msg_type) >> 8));
@@ -663,16 +651,14 @@ namespace WindowsFormsApp1
 
             //building message
             header_serial_data.origin_node = ComDef.HOST;
-            header_serial_data.destination_node = Convert.ToUInt16(textBox_Identity_NodeID.Text);
+            header_serial_data.destination_node = Convert.ToByte(textBox_Identity_NodeID.Text);
             header_serial_data.send_time = ComDef.SECOND_SEND_TIME;
             header_serial_data.msg_type = ComDef.MSG_TYPE_RETRIEVE_HEALTH;
             header_serial_data.payload_length = ComDef.MSG_TYPE_RETRIEVE_HEALTH_PAYLOAD_LENGHT;
 
             //fill header
-            msg.Add((byte)((header_serial_data.origin_node) >> 8));
-            msg.Add((byte)((header_serial_data.origin_node) & 0x00FF));
-            msg.Add((byte)((header_serial_data.destination_node) >> 8));
-            msg.Add((byte)((header_serial_data.destination_node) & 0x00FF));
+            msg.Add((byte)(header_serial_data.origin_node));
+            msg.Add((byte)(header_serial_data.destination_node));
             msg.Add((byte)((header_serial_data.send_time) >> 8));
             msg.Add((byte)((header_serial_data.send_time) & 0x00FF));
             msg.Add((byte)((header_serial_data.msg_type) >> 8));
@@ -694,16 +680,14 @@ namespace WindowsFormsApp1
 
             //building message
             header_serial_data.origin_node = ComDef.HOST;
-            header_serial_data.destination_node = Convert.ToUInt16(textBox_Identity_NodeID.Text);
+            header_serial_data.destination_node = Convert.ToByte(textBox_Identity_NodeID.Text);
             header_serial_data.send_time = ComDef.SECOND_SEND_TIME;
             header_serial_data.msg_type = ComDef.MSG_TYPE_SEND_ADC_CAL;
             header_serial_data.payload_length = ComDef.MSG_TYPE_SEND_ADC_CAL_LENGTH;
 
             //fill header
-            msg.Add((byte)((header_serial_data.origin_node) >> 8));
-            msg.Add((byte)((header_serial_data.origin_node) & 0x00FF));
-            msg.Add((byte)((header_serial_data.destination_node) >> 8));
-            msg.Add((byte)((header_serial_data.destination_node) & 0x00FF));
+            msg.Add((byte)(header_serial_data.origin_node));
+            msg.Add((byte)(header_serial_data.destination_node));
             msg.Add((byte)((header_serial_data.send_time) >> 8));
             msg.Add((byte)((header_serial_data.send_time) & 0x00FF));
             msg.Add((byte)((header_serial_data.msg_type) >> 8));
@@ -743,16 +727,14 @@ namespace WindowsFormsApp1
 
             //building message
             header_serial_data.origin_node = ComDef.HOST;
-            header_serial_data.destination_node = Convert.ToUInt16(textBox_Identity_NodeID.Text);
+            header_serial_data.destination_node = Convert.ToByte(textBox_Identity_NodeID.Text);
             header_serial_data.send_time = ComDef.SECOND_SEND_TIME;
             header_serial_data.msg_type = ComDef.MSG_TYPE_RETRIEVE_ADC_CAL;
             header_serial_data.payload_length = ComDef.MSG_TYPE_RETRIEVE_ADC_CAL_LENGTH;
 
             //fill header
-            msg.Add((byte)((header_serial_data.origin_node) >> 8));
-            msg.Add((byte)((header_serial_data.origin_node) & 0x00FF));
-            msg.Add((byte)((header_serial_data.destination_node) >> 8));
-            msg.Add((byte)((header_serial_data.destination_node) & 0x00FF));
+            msg.Add((byte)(header_serial_data.origin_node));
+            msg.Add((byte)(header_serial_data.destination_node));
             msg.Add((byte)((header_serial_data.send_time) >> 8));
             msg.Add((byte)((header_serial_data.send_time) & 0x00FF));
             msg.Add((byte)((header_serial_data.msg_type) >> 8));
@@ -778,16 +760,14 @@ namespace WindowsFormsApp1
             {
                 //building message
                 header_serial_data.origin_node = ComDef.HOST;
-                header_serial_data.destination_node = Convert.ToUInt16(textBox_Identity_NodeID.Text);
+                header_serial_data.destination_node = Convert.ToByte(textBox_Identity_NodeID.Text);
                 header_serial_data.send_time = ComDef.SECOND_SEND_TIME;
                 header_serial_data.msg_type = ComDef.MSG_TYPE_SEND_RADIO_CONFIG;
                 header_serial_data.payload_length = ComDef.MSG_TYPE_SEND_RADIO_CONFIG_LENGTH;
 
                 //fill header
-                msg.Add((byte)((header_serial_data.origin_node) >> 8));
-                msg.Add((byte)((header_serial_data.origin_node) & 0x00FF));
-                msg.Add((byte)((header_serial_data.destination_node) >> 8));
-                msg.Add((byte)((header_serial_data.destination_node) & 0x00FF));
+                msg.Add((byte)(header_serial_data.origin_node));
+                msg.Add((byte)(header_serial_data.destination_node));
                 msg.Add((byte)((header_serial_data.send_time) >> 8));
                 msg.Add((byte)((header_serial_data.send_time) & 0x00FF));
                 msg.Add((byte)((header_serial_data.msg_type) >> 8));
@@ -834,16 +814,14 @@ namespace WindowsFormsApp1
             {
                 //building message
                 header_serial_data.origin_node = ComDef.HOST;
-                header_serial_data.destination_node = Convert.ToUInt16(textBox_Identity_NodeID.Text);
+                header_serial_data.destination_node = Convert.ToByte(textBox_Identity_NodeID.Text);
                 header_serial_data.send_time = ComDef.SECOND_SEND_TIME;
                 header_serial_data.msg_type = ComDef.MSG_TYPE_RETRIEVE_RADIO_CONFIG;
                 header_serial_data.payload_length = ComDef.MSG_TYPE_RETRIEVE_RADIO_CONFIG_LENGTH;
 
                 //fill header
-                msg.Add((byte)((header_serial_data.origin_node) >> 8));
-                msg.Add((byte)((header_serial_data.origin_node) & 0x00FF));
-                msg.Add((byte)((header_serial_data.destination_node) >> 8));
-                msg.Add((byte)((header_serial_data.destination_node) & 0x00FF));
+                msg.Add((byte)(header_serial_data.origin_node));
+                msg.Add((byte)(header_serial_data.destination_node));
                 msg.Add((byte)((header_serial_data.send_time) >> 8));
                 msg.Add((byte)((header_serial_data.send_time) & 0x00FF));
                 msg.Add((byte)((header_serial_data.msg_type) >> 8));

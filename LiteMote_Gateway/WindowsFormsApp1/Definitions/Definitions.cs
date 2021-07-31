@@ -8,6 +8,14 @@ namespace WindowsFormsApp1.Definitions
 {
     public class ComDef
     {
+        public const int INDEX_HEADER_ORIGIN_ADDRESS       = 0;
+        public const int INDEX_HEADER_DESTINATION_ADDRESS  = 1;
+        public const int INDEX_HEADER_SEND_TIME_MSB        = 2;
+        public const int INDEX_HEADER_SEND_TIME_LSB        = 3;
+        public const int INDEX_HEADER_MSG_TYPE_MSB         = 4;
+        public const int INDEX_HEADER_MSG_TYPE_LSB         = 5;
+        public const int INDEX_HEADER_PAYLOAD              = 6;
+
         public const int HOST = 0;
         public const int SECOND_SEND_TIME = 1050; //ms
 
