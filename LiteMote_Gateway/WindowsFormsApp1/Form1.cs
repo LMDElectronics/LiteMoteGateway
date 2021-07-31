@@ -225,6 +225,7 @@ namespace WindowsFormsApp1
                         data_header_array[ComDef.INDEX_HEADER_SEND_TIME_LSB] = array_data_send_time[1];
                         data_header_array[ComDef.INDEX_HEADER_MSG_TYPE_MSB] = array_data_msg_type[0];
                         data_header_array[ComDef.INDEX_HEADER_MSG_TYPE_LSB] = array_data_msg_type[1];
+                        data_header_array[ComDef.INDEX_HEADER_PAYLOAD] = array_payload_lenght[1];
 
                         byte[] array_to_send = new byte[data_header_array.Length + data_payload_array.Length ]; 
                         byte[] array_to_send_plus_crc = new byte[array_to_send.Length + 2];
@@ -317,26 +318,21 @@ namespace WindowsFormsApp1
 
                 //Process packet received
                 //save header received
-                header_rx_serial_data.origin_node = textAsBytes[0];
-                header_rx_serial_data.origin_node <<= 8;
-                header_rx_serial_data.origin_node |= textAsBytes[1];
+                header_rx_serial_data.origin_node = textAsBytes[ComDef.INDEX_HEADER_ORIGIN_ADDRESS];
+                header_rx_serial_data.destination_node = textAsBytes[ComDef.INDEX_HEADER_DESTINATION_ADDRESS];
 
-                header_rx_serial_data.destination_node = textAsBytes[2];
-                header_rx_serial_data.destination_node <<= 8;
-                header_rx_serial_data.destination_node |= textAsBytes[3];
-
-                header_rx_serial_data.send_time = textAsBytes[4];
+                header_rx_serial_data.send_time = textAsBytes[ComDef.INDEX_HEADER_SEND_TIME_MSB];
                 header_rx_serial_data.send_time <<= 8;
-                header_rx_serial_data.send_time |= textAsBytes[5];
+                header_rx_serial_data.send_time |= textAsBytes[ComDef.INDEX_HEADER_SEND_TIME_LSB];
 
-                header_rx_serial_data.msg_type = textAsBytes[6];
+                header_rx_serial_data.msg_type = textAsBytes[ComDef.INDEX_HEADER_MSG_TYPE_MSB];
                 header_rx_serial_data.msg_type <<= 8;
-                header_rx_serial_data.msg_type |= textAsBytes[7];
+                header_rx_serial_data.msg_type |= textAsBytes[ComDef.INDEX_HEADER_MSG_TYPE_LSB];
 
-                header_rx_serial_data.payload_length = textAsBytes[8];
+                header_rx_serial_data.payload_length = textAsBytes[ComDef.INDEX_HEADER_PAYLOAD];
 
                 //save payload received
-                int j = 9;
+                int j = 7;
                 for(int i = 0; i < header_rx_serial_data.payload_length; i++)
                 {
                     dataPayload.Add(textAsBytes[j++]); 
