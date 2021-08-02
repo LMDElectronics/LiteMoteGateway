@@ -1146,11 +1146,11 @@
             // textBox_Identity_NodeID
             // 
             this.textBox_Identity_NodeID.Location = new System.Drawing.Point(6, 19);
-            this.textBox_Identity_NodeID.MaxLength = 5;
+            this.textBox_Identity_NodeID.MaxLength = 1;
             this.textBox_Identity_NodeID.Name = "textBox_Identity_NodeID";
             this.textBox_Identity_NodeID.Size = new System.Drawing.Size(94, 20);
             this.textBox_Identity_NodeID.TabIndex = 0;
-            this.textBox_Identity_NodeID.Text = "10333";
+            this.textBox_Identity_NodeID.Text = "1";
             this.textBox_Identity_NodeID.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.textBox_Identity_NodeID.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_Identity_NodeID_KeyPress);
             // 
