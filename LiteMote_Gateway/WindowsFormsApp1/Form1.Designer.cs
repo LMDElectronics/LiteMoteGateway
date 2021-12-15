@@ -702,6 +702,7 @@
             this.comboBox_DataRate.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox_DataRate.FormattingEnabled = true;
             this.comboBox_DataRate.Items.AddRange(new object[] {
+            "2",
             "25",
             "50",
             "100",
