@@ -281,11 +281,11 @@
             // textBox_Destination_Node
             // 
             this.textBox_Destination_Node.Location = new System.Drawing.Point(6, 54);
-            this.textBox_Destination_Node.MaxLength = 3;
+            this.textBox_Destination_Node.MaxLength = 5;
             this.textBox_Destination_Node.Name = "textBox_Destination_Node";
             this.textBox_Destination_Node.Size = new System.Drawing.Size(39, 20);
             this.textBox_Destination_Node.TabIndex = 3;
-            this.textBox_Destination_Node.Text = "1";
+            this.textBox_Destination_Node.Text = "10333";
             this.textBox_Destination_Node.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_Destination_Node_KeyPress);
             // 
             // textBox_Origin_Node
@@ -1036,7 +1036,7 @@
             this.textBox_Identity_Hw_Case.Name = "textBox_Identity_Hw_Case";
             this.textBox_Identity_Hw_Case.Size = new System.Drawing.Size(93, 20);
             this.textBox_Identity_Hw_Case.TabIndex = 12;
-            this.textBox_Identity_Hw_Case.Text = "0.0";
+            this.textBox_Identity_Hw_Case.Text = "7.8";
             this.textBox_Identity_Hw_Case.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // button_Identity_ReadData
@@ -1075,7 +1075,7 @@
             this.textBox_Identity_HW_Version.Name = "textBox_Identity_HW_Version";
             this.textBox_Identity_HW_Version.Size = new System.Drawing.Size(93, 20);
             this.textBox_Identity_HW_Version.TabIndex = 8;
-            this.textBox_Identity_HW_Version.Text = "0.0";
+            this.textBox_Identity_HW_Version.Text = "5.6";
             this.textBox_Identity_HW_Version.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // label15
@@ -1094,7 +1094,7 @@
             this.textBox_Identity_FW_CRC.Name = "textBox_Identity_FW_CRC";
             this.textBox_Identity_FW_CRC.Size = new System.Drawing.Size(93, 20);
             this.textBox_Identity_FW_CRC.TabIndex = 6;
-            this.textBox_Identity_FW_CRC.Text = "0";
+            this.textBox_Identity_FW_CRC.Text = "4";
             this.textBox_Identity_FW_CRC.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // label14
@@ -1113,7 +1113,7 @@
             this.textBox_Identity_FW_Ver.Name = "textBox_Identity_FW_Ver";
             this.textBox_Identity_FW_Ver.Size = new System.Drawing.Size(93, 20);
             this.textBox_Identity_FW_Ver.TabIndex = 4;
-            this.textBox_Identity_FW_Ver.Text = "0.0";
+            this.textBox_Identity_FW_Ver.Text = "2.3";
             this.textBox_Identity_FW_Ver.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // label13
@@ -1132,7 +1132,7 @@
             this.textBox_Identity_Node_Type.Name = "textBox_Identity_Node_Type";
             this.textBox_Identity_Node_Type.Size = new System.Drawing.Size(93, 20);
             this.textBox_Identity_Node_Type.TabIndex = 2;
-            this.textBox_Identity_Node_Type.Text = "0";
+            this.textBox_Identity_Node_Type.Text = "1";
             this.textBox_Identity_Node_Type.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // label12
@@ -1147,11 +1147,11 @@
             // textBox_Identity_NodeID
             // 
             this.textBox_Identity_NodeID.Location = new System.Drawing.Point(6, 19);
-            this.textBox_Identity_NodeID.MaxLength = 1;
+            this.textBox_Identity_NodeID.MaxLength = 5;
             this.textBox_Identity_NodeID.Name = "textBox_Identity_NodeID";
             this.textBox_Identity_NodeID.Size = new System.Drawing.Size(94, 20);
             this.textBox_Identity_NodeID.TabIndex = 0;
-            this.textBox_Identity_NodeID.Text = "1";
+            this.textBox_Identity_NodeID.Text = "10333";
             this.textBox_Identity_NodeID.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.textBox_Identity_NodeID.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_Identity_NodeID_KeyPress);
             // 
