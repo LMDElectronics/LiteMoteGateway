@@ -129,7 +129,7 @@ namespace WindowsFormsApp1
             byte[] array_data_destination_node = new byte[2]; ;
             byte[] array_data_send_time = new byte[2];
             byte[] array_data_msg_type = new byte[2];
-            byte[] array_payload_lenght = new byte[2];
+            byte payload_lenght;
 
             byte[] data_header_array = new byte[array_data_origin_node.Length + array_data_destination_node.Length + array_data_send_time.Length + array_data_msg_type.Length + 1];
             byte[] data_payload_array;
@@ -218,8 +218,7 @@ namespace WindowsFormsApp1
                         array_data_msg_type = BitConverter.GetBytes(header_serial_data.msg_type);
                         Array.Reverse(array_data_msg_type); //big endian data
 
-                        array_payload_lenght = BitConverter.GetBytes(header_serial_data.payload_length);
-                        Array.Reverse(array_payload_lenght); //big endian data
+                        payload_lenght = header_serial_data.payload_length;
 
                         //copy data collected from text box to header array
                         data_header_array[ComDef.INDEX_HEADER_ORIGIN_ADDRESS_MSB] = array_data_origin_node[0];
@@ -230,7 +229,7 @@ namespace WindowsFormsApp1
                         data_header_array[ComDef.INDEX_HEADER_SEND_TIME_LSB] = array_data_send_time[1];
                         data_header_array[ComDef.INDEX_HEADER_MSG_TYPE_MSB] = array_data_msg_type[0];
                         data_header_array[ComDef.INDEX_HEADER_MSG_TYPE_LSB] = array_data_msg_type[1];
-                        data_header_array[ComDef.INDEX_HEADER_PAYLOAD_LENGHT] = array_payload_lenght[0];
+                        data_header_array[ComDef.INDEX_HEADER_PAYLOAD_LENGHT] = payload_lenght;
 
                         byte[] array_to_send = new byte[data_header_array.Length + data_payload_array.Length ]; 
                         byte[] array_to_send_plus_crc = new byte[array_to_send.Length + 2];
