@@ -193,12 +193,12 @@ namespace WindowsFormsApp1
                     {
                         MessageBox.Show("Overflow error, valid payload lenght [0 - 119]");
                         data_overflow_error = true;
-
+                        
                         data_payload_array = HexStringConverter.ToByteArray("0");
                     }
                     else
                     {
-                        //convert textbox data to hexadecimal byte array
+                        //convert textbox data to hexadecimal byte array                        
                         data_payload_array = HexStringConverter.ToByteArray(textBox_Frame_Payload.Text);
                         header_serial_data.payload_length = (byte)(data_payload_array.Length);
                     }
@@ -297,57 +297,65 @@ namespace WindowsFormsApp1
             {
                 //decode data                
                 data_in = data_in.Substring(1);
-                byte[] textAsBytes = System.Convert.FromBase64String(data_in);
 
-                //check CRC from received frame
-                ushort crc_Received = (ushort)textAsBytes[textAsBytes.Length - 2];
-                crc_Received <<= 8;
-                crc_Received |= (ushort)textAsBytes[textAsBytes.Length - 1];
-
-                byte[] textAsBytes_Without_CRC = new byte[textAsBytes.Length - 2];
-                Array.Copy(textAsBytes, textAsBytes_Without_CRC, textAsBytes.Length - 2);
-
-                if((crc_Received != CRC_16_ARC.Crc16_ARC(textAsBytes_Without_CRC)))
+                try
                 {
-                    //CRC not match, bad frame signal it
-                    textBox_Data_Received.AppendText(" " + "->" + " BAD CRC FRAME " + System.Environment.NewLine);
+                    byte[] textAsBytes = System.Convert.FromBase64String(data_in);
+
+                    //check CRC from received frame
+                    ushort crc_Received = (ushort)textAsBytes[textAsBytes.Length - 2];
+                    crc_Received <<= 8;
+                    crc_Received |= (ushort)textAsBytes[textAsBytes.Length - 1];
+
+                    byte[] textAsBytes_Without_CRC = new byte[textAsBytes.Length - 2];
+                    Array.Copy(textAsBytes, textAsBytes_Without_CRC, textAsBytes.Length - 2);
+
+                    if ((crc_Received != CRC_16_ARC.Crc16_ARC(textAsBytes_Without_CRC)))
+                    {
+                        //CRC not match, bad frame signal it
+                        textBox_Data_Received.AppendText(" " + "->" + " BAD CRC FRAME " + System.Environment.NewLine);
+                    }
+                    else
+                    {
+                        //CRC match, frame OK, displaying   
+
+                        data_decoded = BitConverter.ToString(textAsBytes).Replace("-", "");
+                        textBox_Data_Received.AppendText(" " + "->" + " " + " CRC OK " + data_decoded + System.Environment.NewLine);
+                    }
+
+                    //Process packet received
+                    //save header received
+                    header_rx_serial_data.origin_node = textAsBytes[ComDef.INDEX_HEADER_ORIGIN_ADDRESS_MSB];
+                    header_rx_serial_data.origin_node <<= 8;
+                    header_rx_serial_data.send_time |= textAsBytes[ComDef.INDEX_HEADER_ORIGIN_ADDRESS_LSB];
+
+                    header_rx_serial_data.destination_node = textAsBytes[ComDef.INDEX_HEADER_DESTINATION_ADDRESS_MSB];
+                    header_rx_serial_data.destination_node <<= 8;
+                    header_rx_serial_data.destination_node |= textAsBytes[ComDef.INDEX_HEADER_DESTINATION_ADDRESS_LSB];
+
+                    header_rx_serial_data.send_time = textAsBytes[ComDef.INDEX_HEADER_SEND_TIME_MSB];
+                    header_rx_serial_data.send_time <<= 8;
+                    header_rx_serial_data.send_time |= textAsBytes[ComDef.INDEX_HEADER_SEND_TIME_LSB];
+
+                    header_rx_serial_data.msg_type = textAsBytes[ComDef.INDEX_HEADER_MSG_TYPE_MSB];
+                    header_rx_serial_data.msg_type <<= 8;
+                    header_rx_serial_data.msg_type |= textAsBytes[ComDef.INDEX_HEADER_MSG_TYPE_LSB];
+
+                    header_rx_serial_data.payload_length = textAsBytes[ComDef.INDEX_HEADER_PAYLOAD_LENGHT];
+
+                    //save payload received
+                    int j = ComDef.INDEX_HEADER_PAYLOAD_START;
+                    for (int i = 0; i < header_rx_serial_data.payload_length; i++)
+                    {
+                        dataPayload.Add(textAsBytes[j++]);
+                    }
+
+                    Process_messages_Rx(dataPayload, header_rx_serial_data.msg_type);
                 }
-                else
+                catch(Exception ex)
                 {
-                    //CRC match, frame OK, displaying   
-
-                    data_decoded = BitConverter.ToString(textAsBytes).Replace("-", "");
-                    textBox_Data_Received.AppendText(" " + "->" + " " + " CRC OK " + data_decoded + System.Environment.NewLine);
+                    MessageBox.Show(ex.Message);
                 }
-
-                //Process packet received
-                //save header received
-                header_rx_serial_data.origin_node = textAsBytes[ComDef.INDEX_HEADER_ORIGIN_ADDRESS_MSB];
-                header_rx_serial_data.origin_node <<= 8;
-                header_rx_serial_data.send_time |= textAsBytes[ComDef.INDEX_HEADER_ORIGIN_ADDRESS_LSB];
-
-                header_rx_serial_data.destination_node = textAsBytes[ComDef.INDEX_HEADER_DESTINATION_ADDRESS_MSB];
-                header_rx_serial_data.destination_node <<= 8;
-                header_rx_serial_data.destination_node |= textAsBytes[ComDef.INDEX_HEADER_DESTINATION_ADDRESS_LSB];
-
-                header_rx_serial_data.send_time = textAsBytes[ComDef.INDEX_HEADER_SEND_TIME_MSB];
-                header_rx_serial_data.send_time <<= 8;
-                header_rx_serial_data.send_time |= textAsBytes[ComDef.INDEX_HEADER_SEND_TIME_LSB];
-
-                header_rx_serial_data.msg_type = textAsBytes[ComDef.INDEX_HEADER_MSG_TYPE_MSB];
-                header_rx_serial_data.msg_type <<= 8;
-                header_rx_serial_data.msg_type |= textAsBytes[ComDef.INDEX_HEADER_MSG_TYPE_LSB];
-
-                header_rx_serial_data.payload_length = textAsBytes[ComDef.INDEX_HEADER_PAYLOAD_LENGHT];
-
-                //save payload received
-                int j = ComDef.INDEX_HEADER_PAYLOAD_START;
-                for(int i = 0; i < header_rx_serial_data.payload_length; i++)
-                {
-                    dataPayload.Add(textAsBytes[j++]); 
-                }
-
-                Process_messages_Rx(dataPayload, header_rx_serial_data.msg_type);
             }
             else
             {

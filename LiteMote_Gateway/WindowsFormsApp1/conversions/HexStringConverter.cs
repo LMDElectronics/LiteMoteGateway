@@ -17,6 +17,7 @@ namespace WindowsFormsApp1.conversions
             {
                 bytes[i / 2] = Convert.ToByte(HexString.Substring(i, 2), 16);
             }
+            
             return bytes;
         }
     }
