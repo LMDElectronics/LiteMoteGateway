@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO.Ports;
 using System.Timers;
+using System.Diagnostics;
 
 using WindowsFormsApp1.conversions;
 using WindowsFormsApp1.crc_utils;
@@ -295,11 +296,10 @@ namespace WindowsFormsApp1
             //check if data is encoded
             if(radioButton_base64_encoding.Enabled == true)
             {
-                //decode data                
-                data_in = data_in.Substring(1);
-
                 try
                 {
+                    //decode data                
+                    data_in = data_in.Substring(1);
                     byte[] textAsBytes = System.Convert.FromBase64String(data_in);
 
                     //check CRC from received frame
@@ -354,7 +354,7 @@ namespace WindowsFormsApp1
                 }
                 catch(Exception ex)
                 {
-                    MessageBox.Show(ex.Message);
+                    Debug.WriteLine(ex.Message);
                 }
             }
             else
