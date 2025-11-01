@@ -277,14 +277,21 @@ namespace WindowsFormsApp1
 
         private void serialPort1_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            //read data
-            data_in = serialPort1.ReadTo(textBox_Stop_Frame_Char.Text);
-            //data_in = serialPort1.ReadExisting();
+            try
+            {
+                //read data
+                data_in = serialPort1.ReadTo(textBox_Stop_Frame_Char.Text);
+                //data_in = serialPort1.ReadExisting();
 
-            //flush data received 
-            serialPort1.DiscardInBuffer();
+                //flush data received 
+                serialPort1.DiscardInBuffer();
 
-            this.Invoke(new EventHandler(Show_Data));
+                this.Invoke(new EventHandler(Show_Data));
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);                
+            }
         }
          
         private void Show_Data(object sender, EventArgs e)
