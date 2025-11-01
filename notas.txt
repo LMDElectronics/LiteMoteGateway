@@ -1,0 +1,5 @@
+LiteMotaGateway app:
+--------------------
+
+Falta:
+  organizar control edit para el datarate, se enviara el datarate que se encuentre en ese edit directamente al HW

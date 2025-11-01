@@ -33,9 +33,9 @@ namespace WindowsFormsApp1
 
         delegate void SetTextCallback(string text, Color c);
 
-        //base64 encoding related vars
-        string base64_frame_Start_char;
-        string base64_frame_Stop_char;
+        //serial encoding char
+        string serial_frame_Start_char = "";
+        string serial_frame_Stop_char = "";
 
         // Create a timer and set a two second interval.
         private System.Timers.Timer aTimer;
@@ -67,7 +67,8 @@ namespace WindowsFormsApp1
                 y = y + 0.5;
             }
 
-            radioButton_raw_encoding.Select();
+            serial_frame_Start_char = serialProtocolDefines.SERIAL_BASE64_START_FRAME_CHAR;
+            serial_frame_Stop_char = serialProtocolDefines.SERIAL_BASE64_STOP_FRAME_CHAR;
         }
 
         private void groupBox1_Enter(object sender, EventArgs e)
@@ -87,10 +88,6 @@ namespace WindowsFormsApp1
             {
                 try
                 {
-                    //blocking start and stop char text box
-                    textBox_Stop_Frame_Char.Enabled = false;
-                    textBox_Start_Frame_Char.Enabled = false;
-
                     serialPort1.PortName = Combo_Port_Number.Text;
                     serialPort1.BaudRate = Convert.ToInt32(Combo_Baud_Rate.Text);
                     serialPort1.DataBits = Convert.ToInt32(Combo_Data_Bits.Text);
@@ -115,11 +112,14 @@ namespace WindowsFormsApp1
                 button_Open_Port.Text = "OPEN PORT";
                 progressBar1.Value = 0;
 
-                textBox_Stop_Frame_Char.Enabled = true;
-                textBox_Start_Frame_Char.Enabled = true;
-
                 serialPort1.Close();
             }
+        }
+
+        private string ApplySerialEncoding(string data)
+        {            
+            string retval = serial_frame_Start_char + data + serial_frame_Stop_char;
+            return retval;
         }
 
         private void button_Send_Data_Click(object sender, EventArgs e)
@@ -147,126 +147,119 @@ namespace WindowsFormsApp1
 
                 textBox_Data_To_Send.Clear();
 
-                if(radioButton_base64_encoding.Checked)
+                //encoding frame to base64                
+                if(UInt32.Parse(textBox_Origin_Node.Text) > 0xffff)
                 {
-                    //encoding frame to base64                
-                    if(UInt32.Parse(textBox_Origin_Node.Text) > 0xffff)
-                    {
-                        MessageBox.Show("Overflow error, origin node valid address limits [0 - 65535]");
-                        data_overflow_error = true;
-                    }
-                    else
-                    {
-                        header_serial_data.origin_node = ushort.Parse(textBox_Origin_Node.Text);
-                    }
-
-                    if (UInt32.Parse(textBox_Destination_Node.Text) > 0xffff)
-                    {
-                        MessageBox.Show("Overflow error, destination node valid address [0 - 65535]");
-                        data_overflow_error = true;
-                    }
-                    else
-                    {
-                        header_serial_data.destination_node = ushort.Parse(textBox_Destination_Node.Text);
-                    }
-
-                    if (UInt32.Parse(textBox_Send_Time.Text) > 0xffff)
-                    {
-                        MessageBox.Show("Overflow error, send time valid [0 - 5000] ( ms )");
-                        data_overflow_error = true;
-                    }
-                    else
-                    {
-                        header_serial_data.send_time = ushort.Parse(textBox_Send_Time.Text);
-                    }
-
-                    if (ushort.Parse(textBox_Msg_Type.Text) > 0xff)
-                    {
-                        MessageBox.Show("Overflow error, valid msg types [0 - 255]");
-                        data_overflow_error = true;
-                    }
-                    else
-                    {
-                        header_serial_data.msg_type = byte.Parse(textBox_Msg_Type.Text);
-                    }
-
-                    if (textBox_Frame_Payload.Text.Length > 128 - data_header_array.Length + 2)
-                    {
-                        MessageBox.Show("Overflow error, valid payload lenght [0 - 119]");
-                        data_overflow_error = true;
-                        
-                        data_payload_array = HexStringConverter.ToByteArray("0");
-                    }
-                    else
-                    {
-                        //convert textbox data to hexadecimal byte array                        
-                        data_payload_array = HexStringConverter.ToByteArray(textBox_Frame_Payload.Text);
-                        header_serial_data.payload_length = (byte)(data_payload_array.Length);
-                    }
-                    if (data_overflow_error == false)
-                    {                       
-
-                        //arrange data to send it properly via serial port
-                        array_data_origin_node = BitConverter.GetBytes(header_serial_data.origin_node);
-                        Array.Reverse(array_data_origin_node); //big endian data
-
-                        array_data_destination_node = BitConverter.GetBytes(header_serial_data.destination_node);
-                        Array.Reverse(array_data_destination_node); //big endian data
-
-                        array_data_send_time = BitConverter.GetBytes(header_serial_data.send_time);
-                        Array.Reverse(array_data_send_time); //big endian data
-
-                        array_data_msg_type = BitConverter.GetBytes(header_serial_data.msg_type);
-                        Array.Reverse(array_data_msg_type); //big endian data
-
-                        payload_lenght = header_serial_data.payload_length;
-
-                        //copy data collected from text box to header array
-                        data_header_array[ComDef.INDEX_HEADER_ORIGIN_ADDRESS_MSB] = array_data_origin_node[0];
-                        data_header_array[ComDef.INDEX_HEADER_ORIGIN_ADDRESS_LSB] = array_data_origin_node[1];
-                        data_header_array[ComDef.INDEX_HEADER_DESTINATION_ADDRESS_MSB] = array_data_destination_node[0];
-                        data_header_array[ComDef.INDEX_HEADER_DESTINATION_ADDRESS_LSB] = array_data_destination_node[1];
-                        data_header_array[ComDef.INDEX_HEADER_SEND_TIME_MSB] = array_data_send_time[0];
-                        data_header_array[ComDef.INDEX_HEADER_SEND_TIME_LSB] = array_data_send_time[1];
-                        data_header_array[ComDef.INDEX_HEADER_MSG_TYPE_MSB] = array_data_msg_type[0];
-                        data_header_array[ComDef.INDEX_HEADER_MSG_TYPE_LSB] = array_data_msg_type[1];
-                        data_header_array[ComDef.INDEX_HEADER_PAYLOAD_LENGHT] = payload_lenght;
-
-                        byte[] array_to_send = new byte[data_header_array.Length + data_payload_array.Length ]; 
-                        byte[] array_to_send_plus_crc = new byte[array_to_send.Length + 2];
-
-                        ushort frame_CRC = 0;
-                        byte[] array_crc = new byte[2];
-
-                        //form byte array to be sent via serial port
-                        System.Buffer.BlockCopy(data_header_array, 0, array_to_send, 0, data_header_array.Length);                       
-                        System.Buffer.BlockCopy(data_payload_array, 0, array_to_send, data_header_array.Length, data_payload_array.Length);
-           
-                        //add CRC to the end of the built frame
-                        frame_CRC = CRC_16_ARC.Crc16_ARC(array_to_send);
-                        array_crc = BitConverter.GetBytes(frame_CRC);
-                        Array.Reverse(array_crc); //big endian data
-                        System.Buffer.BlockCopy(array_to_send, 0, array_to_send_plus_crc, 0, data_header_array.Length + data_payload_array.Length);
-                        System.Buffer.BlockCopy(array_crc, 0, array_to_send_plus_crc, data_header_array.Length + data_payload_array.Length, 2);
-
-                        //encode to base64
-                        data_out = System.Convert.ToBase64String(array_to_send_plus_crc);
-
-                        //ad start and stop characters
-                        data_out = textBox_Start_Frame_Char.Text + data_out + textBox_Stop_Frame_Char.Text;
-
-                        //send data
-                        serialPort1.Write(data_out);
-
-                        //print sent data
-                        textBox_Data_To_Send.Text += data_out + Environment.NewLine;
-                    }
+                    MessageBox.Show("Overflow error, origin node valid address limits [0 - 65535]");
+                    data_overflow_error = true;
+                }
+                else
+                {
+                    header_serial_data.origin_node = ushort.Parse(textBox_Origin_Node.Text);
                 }
 
-                if(radioButton_raw_encoding.Checked)
+                if (UInt32.Parse(textBox_Destination_Node.Text) > 0xffff)
                 {
-                    //raw encoding serial frame
-                }               
+                    MessageBox.Show("Overflow error, destination node valid address [0 - 65535]");
+                    data_overflow_error = true;
+                }
+                else
+                {
+                    header_serial_data.destination_node = ushort.Parse(textBox_Destination_Node.Text);
+                }
+
+                if (UInt32.Parse(textBox_Send_Time.Text) > 0xffff)
+                {
+                    MessageBox.Show("Overflow error, send time valid [0 - 5000] ( ms )");
+                    data_overflow_error = true;
+                }
+                else
+                {
+                    header_serial_data.send_time = ushort.Parse(textBox_Send_Time.Text);
+                }
+
+                if (ushort.Parse(textBox_Msg_Type.Text) > 0xff)
+                {
+                    MessageBox.Show("Overflow error, valid msg types [0 - 255]");
+                    data_overflow_error = true;
+                }
+                else
+                {
+                    header_serial_data.msg_type = byte.Parse(textBox_Msg_Type.Text);
+                }
+
+                if (textBox_Frame_Payload.Text.Length > 128 - data_header_array.Length + 2)
+                {
+                    MessageBox.Show("Overflow error, valid payload lenght [0 - 119]");
+                    data_overflow_error = true;
+                        
+                    data_payload_array = HexStringConverter.ToByteArray("0");
+                }
+                else
+                {
+                    //convert textbox data to hexadecimal byte array                        
+                    data_payload_array = HexStringConverter.ToByteArray(textBox_Frame_Payload.Text);
+                    header_serial_data.payload_length = (byte)(data_payload_array.Length);
+                }
+                if (data_overflow_error == false)
+                {                       
+
+                    //arrange data to send it properly via serial port
+                    array_data_origin_node = BitConverter.GetBytes(header_serial_data.origin_node);
+                    Array.Reverse(array_data_origin_node); //big endian data
+
+                    array_data_destination_node = BitConverter.GetBytes(header_serial_data.destination_node);
+                    Array.Reverse(array_data_destination_node); //big endian data
+
+                    array_data_send_time = BitConverter.GetBytes(header_serial_data.send_time);
+                    Array.Reverse(array_data_send_time); //big endian data
+
+                    array_data_msg_type = BitConverter.GetBytes(header_serial_data.msg_type);
+                    Array.Reverse(array_data_msg_type); //big endian data
+
+                    payload_lenght = header_serial_data.payload_length;
+
+                    //copy data collected from text box to header array
+                    data_header_array[ComDef.INDEX_HEADER_ORIGIN_ADDRESS_MSB] = array_data_origin_node[0];
+                    data_header_array[ComDef.INDEX_HEADER_ORIGIN_ADDRESS_LSB] = array_data_origin_node[1];
+                    data_header_array[ComDef.INDEX_HEADER_DESTINATION_ADDRESS_MSB] = array_data_destination_node[0];
+                    data_header_array[ComDef.INDEX_HEADER_DESTINATION_ADDRESS_LSB] = array_data_destination_node[1];
+                    data_header_array[ComDef.INDEX_HEADER_SEND_TIME_MSB] = array_data_send_time[0];
+                    data_header_array[ComDef.INDEX_HEADER_SEND_TIME_LSB] = array_data_send_time[1];
+                    data_header_array[ComDef.INDEX_HEADER_MSG_TYPE_MSB] = array_data_msg_type[0];
+                    data_header_array[ComDef.INDEX_HEADER_MSG_TYPE_LSB] = array_data_msg_type[1];
+                    data_header_array[ComDef.INDEX_HEADER_PAYLOAD_LENGHT] = payload_lenght;
+
+                    byte[] array_to_send = new byte[data_header_array.Length + data_payload_array.Length ]; 
+                    byte[] array_to_send_plus_crc = new byte[array_to_send.Length + 2];
+
+                    ushort frame_CRC = 0;
+                    byte[] array_crc = new byte[2];
+
+                    //form byte array to be sent via serial port
+                    System.Buffer.BlockCopy(data_header_array, 0, array_to_send, 0, data_header_array.Length);                       
+                    System.Buffer.BlockCopy(data_payload_array, 0, array_to_send, data_header_array.Length, data_payload_array.Length);
+           
+                    //add CRC to the end of the built frame
+                    frame_CRC = CRC_16_ARC.Crc16_ARC(array_to_send);
+                    array_crc = BitConverter.GetBytes(frame_CRC);
+                    Array.Reverse(array_crc); //big endian data
+                    System.Buffer.BlockCopy(array_to_send, 0, array_to_send_plus_crc, 0, data_header_array.Length + data_payload_array.Length);
+                    System.Buffer.BlockCopy(array_crc, 0, array_to_send_plus_crc, data_header_array.Length + data_payload_array.Length, 2);
+
+                    //encode to base64
+                    data_out = System.Convert.ToBase64String(array_to_send_plus_crc);
+
+                    //ad start and stop characters
+                    data_out = ApplySerialEncoding(data_out);
+
+                    //send data
+                    serialPort1.Write(data_out);
+
+                    //print sent data
+                    textBox_Data_To_Send.Text += data_out + Environment.NewLine;
+                }
+                             
             }
         }
 
@@ -280,7 +273,7 @@ namespace WindowsFormsApp1
             try
             {
                 //read data
-                data_in = serialPort1.ReadTo(textBox_Stop_Frame_Char.Text);
+                data_in = serialPort1.ReadTo(serial_frame_Stop_char);
                 //data_in = serialPort1.ReadExisting();
 
                 //flush data received 
@@ -300,98 +293,66 @@ namespace WindowsFormsApp1
             textBox_Data_Received.AppendText(DateTime.Now + " " + data_in + ">");
             List<byte> dataPayload = new List<byte>();
 
-            //check if data is encoded
-            if(radioButton_base64_encoding.Enabled == true)
+            try
             {
-                try
+                //decode data                
+                data_in = data_in.Substring(1);
+                byte[] textAsBytes = System.Convert.FromBase64String(data_in);
+
+                //check CRC from received frame
+                ushort crc_Received = (ushort)textAsBytes[textAsBytes.Length - 2];
+                crc_Received <<= 8;
+                crc_Received |= (ushort)textAsBytes[textAsBytes.Length - 1];
+
+                byte[] textAsBytes_Without_CRC = new byte[textAsBytes.Length - 2];
+                Array.Copy(textAsBytes, textAsBytes_Without_CRC, textAsBytes.Length - 2);
+
+                if ((crc_Received != CRC_16_ARC.Crc16_ARC(textAsBytes_Without_CRC)))
                 {
-                    //decode data                
-                    data_in = data_in.Substring(1);
-                    byte[] textAsBytes = System.Convert.FromBase64String(data_in);
-
-                    //check CRC from received frame
-                    ushort crc_Received = (ushort)textAsBytes[textAsBytes.Length - 2];
-                    crc_Received <<= 8;
-                    crc_Received |= (ushort)textAsBytes[textAsBytes.Length - 1];
-
-                    byte[] textAsBytes_Without_CRC = new byte[textAsBytes.Length - 2];
-                    Array.Copy(textAsBytes, textAsBytes_Without_CRC, textAsBytes.Length - 2);
-
-                    if ((crc_Received != CRC_16_ARC.Crc16_ARC(textAsBytes_Without_CRC)))
-                    {
-                        //CRC not match, bad frame signal it
-                        textBox_Data_Received.AppendText(" " + "->" + " BAD CRC FRAME " + System.Environment.NewLine);
-                    }
-                    else
-                    {
-                        //CRC match, frame OK, displaying   
-
-                        data_decoded = BitConverter.ToString(textAsBytes).Replace("-", "");
-                        textBox_Data_Received.AppendText(" " + "->" + " " + " CRC OK " + data_decoded + System.Environment.NewLine);
-                    }
-
-                    //Process packet received
-                    //save header received
-                    header_rx_serial_data.origin_node = textAsBytes[ComDef.INDEX_HEADER_ORIGIN_ADDRESS_MSB];
-                    header_rx_serial_data.origin_node <<= 8;
-                    header_rx_serial_data.send_time |= textAsBytes[ComDef.INDEX_HEADER_ORIGIN_ADDRESS_LSB];
-
-                    header_rx_serial_data.destination_node = textAsBytes[ComDef.INDEX_HEADER_DESTINATION_ADDRESS_MSB];
-                    header_rx_serial_data.destination_node <<= 8;
-                    header_rx_serial_data.destination_node |= textAsBytes[ComDef.INDEX_HEADER_DESTINATION_ADDRESS_LSB];
-
-                    header_rx_serial_data.send_time = textAsBytes[ComDef.INDEX_HEADER_SEND_TIME_MSB];
-                    header_rx_serial_data.send_time <<= 8;
-                    header_rx_serial_data.send_time |= textAsBytes[ComDef.INDEX_HEADER_SEND_TIME_LSB];
-
-                    header_rx_serial_data.msg_type = textAsBytes[ComDef.INDEX_HEADER_MSG_TYPE_MSB];
-                    header_rx_serial_data.msg_type <<= 8;
-                    header_rx_serial_data.msg_type |= textAsBytes[ComDef.INDEX_HEADER_MSG_TYPE_LSB];
-
-                    header_rx_serial_data.payload_length = textAsBytes[ComDef.INDEX_HEADER_PAYLOAD_LENGHT];
-
-                    //save payload received
-                    int j = ComDef.INDEX_HEADER_PAYLOAD_START;
-                    for (int i = 0; i < header_rx_serial_data.payload_length; i++)
-                    {
-                        dataPayload.Add(textAsBytes[j++]);
-                    }
-
-                    Process_messages_Rx(dataPayload, header_rx_serial_data.msg_type);
+                    //CRC not match, bad frame signal it
+                    textBox_Data_Received.AppendText(" " + "->" + " BAD CRC FRAME " + System.Environment.NewLine);
                 }
-                catch(Exception ex)
+                else
                 {
-                    Debug.WriteLine(ex.Message);
+                    //CRC match, frame OK, displaying   
+
+                    data_decoded = BitConverter.ToString(textAsBytes).Replace("-", "");
+                    textBox_Data_Received.AppendText(" " + "->" + " " + " CRC OK " + data_decoded + System.Environment.NewLine);
                 }
+
+                //Process packet received
+                //save header received
+                header_rx_serial_data.origin_node = textAsBytes[ComDef.INDEX_HEADER_ORIGIN_ADDRESS_MSB];
+                header_rx_serial_data.origin_node <<= 8;
+                header_rx_serial_data.send_time |= textAsBytes[ComDef.INDEX_HEADER_ORIGIN_ADDRESS_LSB];
+
+                header_rx_serial_data.destination_node = textAsBytes[ComDef.INDEX_HEADER_DESTINATION_ADDRESS_MSB];
+                header_rx_serial_data.destination_node <<= 8;
+                header_rx_serial_data.destination_node |= textAsBytes[ComDef.INDEX_HEADER_DESTINATION_ADDRESS_LSB];
+
+                header_rx_serial_data.send_time = textAsBytes[ComDef.INDEX_HEADER_SEND_TIME_MSB];
+                header_rx_serial_data.send_time <<= 8;
+                header_rx_serial_data.send_time |= textAsBytes[ComDef.INDEX_HEADER_SEND_TIME_LSB];
+
+                header_rx_serial_data.msg_type = textAsBytes[ComDef.INDEX_HEADER_MSG_TYPE_MSB];
+                header_rx_serial_data.msg_type <<= 8;
+                header_rx_serial_data.msg_type |= textAsBytes[ComDef.INDEX_HEADER_MSG_TYPE_LSB];
+
+                header_rx_serial_data.payload_length = textAsBytes[ComDef.INDEX_HEADER_PAYLOAD_LENGHT];
+
+                //save payload received
+                int j = ComDef.INDEX_HEADER_PAYLOAD_START;
+                for (int i = 0; i < header_rx_serial_data.payload_length; i++)
+                {
+                    dataPayload.Add(textAsBytes[j++]);
+                }
+
+                Process_messages_Rx(dataPayload, header_rx_serial_data.msg_type);
             }
-            else
+            catch(Exception ex)
             {
-                //TODO raw frame receiving
+                Debug.WriteLine(ex.Message);
             }
-        }
-
-        private void radioButton_base64_encoding_CheckedChanged(object sender, EventArgs e)
-        {
-            if(radioButton_base64_encoding.Checked)
-            {
-                //enabling start and stop char selection
-                textBox_Start_Frame_Char.Enabled = true;
-                textBox_Stop_Frame_Char.Enabled = true;
-
-                //get sart and stop chars from textbox
-                base64_frame_Start_char = textBox_Start_Frame_Char.Text; 
-                base64_frame_Stop_char = textBox_Stop_Frame_Char.Text;
-            }
-        }
-
-        private void radioButton_raw_encoding_CheckedChanged(object sender, EventArgs e)
-        {
-            //disabling start and stop char selection
-            textBox_Start_Frame_Char.Clear();
-            textBox_Stop_Frame_Char.Clear();
-
-            textBox_Start_Frame_Char.Enabled = false;
-            textBox_Stop_Frame_Char.Enabled = false;
         }
 
         private void textBox_Frame_Payload_KeyPress(object sender, KeyPressEventArgs e)
@@ -595,7 +556,7 @@ namespace WindowsFormsApp1
             aTimer.Interval = 3000;
             aTimer.Start();
 
-            serialPort1.Write(textBox_Start_Frame_Char.Text + System.Convert.ToBase64String(msg.ToArray()) + textBox_Stop_Frame_Char.Text);
+            serialPort1.Write(serial_frame_Start_char + System.Convert.ToBase64String(msg.ToArray()) + serial_frame_Stop_char);
         }
 
         private void button_Identity_ReadData_Click(object sender, EventArgs e)
@@ -626,7 +587,7 @@ namespace WindowsFormsApp1
             msg.Add((byte)(msgCRC >> 8));
             msg.Add((byte)(msgCRC & 0x00FF));
 
-            serialPort1.Write(textBox_Start_Frame_Char.Text + System.Convert.ToBase64String(msg.ToArray()) + textBox_Stop_Frame_Char.Text);
+            serialPort1.Write(serial_frame_Start_char + System.Convert.ToBase64String(msg.ToArray()) + serial_frame_Stop_char);
 
         }
 
@@ -670,7 +631,7 @@ namespace WindowsFormsApp1
             aTimer.Interval = 3000;
             aTimer.Start();
 
-            serialPort1.Write(textBox_Start_Frame_Char.Text + System.Convert.ToBase64String(msg.ToArray()) + textBox_Stop_Frame_Char.Text);
+            serialPort1.Write(serial_frame_Start_char + System.Convert.ToBase64String(msg.ToArray()) + serial_frame_Stop_char);
         }
 
         private void button_Read_Data_Health_Click(object sender, EventArgs e)
@@ -701,7 +662,7 @@ namespace WindowsFormsApp1
             msg.Add((byte)(msgCRC >> 8));
             msg.Add((byte)(msgCRC & 0x00FF));
 
-            serialPort1.Write(textBox_Start_Frame_Char.Text + System.Convert.ToBase64String(msg.ToArray()) + textBox_Stop_Frame_Char.Text);
+            serialPort1.Write(serial_frame_Start_char + System.Convert.ToBase64String(msg.ToArray()) + serial_frame_Stop_char);
         }
 
         private void button_Save_ADC_Data_Click(object sender, EventArgs e)
@@ -750,7 +711,7 @@ namespace WindowsFormsApp1
             aTimer.Interval = 3000;
             aTimer.Start();
 
-            serialPort1.Write(textBox_Start_Frame_Char.Text + System.Convert.ToBase64String(msg.ToArray()) + textBox_Stop_Frame_Char.Text);
+            serialPort1.Write(serial_frame_Start_char + System.Convert.ToBase64String(msg.ToArray()) + serial_frame_Stop_char);
         }
 
         private void button_ADC_Read_Data_Click(object sender, EventArgs e)
@@ -781,7 +742,7 @@ namespace WindowsFormsApp1
             msg.Add((byte)(msgCRC >> 8));
             msg.Add((byte)(msgCRC & 0x00FF));
 
-            serialPort1.Write(textBox_Start_Frame_Char.Text + System.Convert.ToBase64String(msg.ToArray()) + textBox_Stop_Frame_Char.Text);
+            serialPort1.Write(serial_frame_Start_char + System.Convert.ToBase64String(msg.ToArray()) + serial_frame_Stop_char);
         }
 
         private void button_Save_Radio_Data_Click(object sender, EventArgs e)
@@ -836,7 +797,7 @@ namespace WindowsFormsApp1
                 aTimer.Interval = 3000;
                 aTimer.Start();
 
-                serialPort1.Write(textBox_Start_Frame_Char.Text + System.Convert.ToBase64String(msg.ToArray()) + textBox_Stop_Frame_Char.Text);
+                serialPort1.Write(serial_frame_Start_char + System.Convert.ToBase64String(msg.ToArray()) + serial_frame_Stop_char);
 
             }
             catch
@@ -875,7 +836,7 @@ namespace WindowsFormsApp1
                 msg.Add((byte)(msgCRC >> 8));
                 msg.Add((byte)(msgCRC & 0x00FF));
 
-                serialPort1.Write(textBox_Start_Frame_Char.Text + System.Convert.ToBase64String(msg.ToArray()) + textBox_Stop_Frame_Char.Text);
+                serialPort1.Write(serial_frame_Start_char + System.Convert.ToBase64String(msg.ToArray()) + serial_frame_Stop_char);
             }
             catch
             {

@@ -44,13 +44,6 @@
             this.textBox_Send_Time = new System.Windows.Forms.TextBox();
             this.textBox_Destination_Node = new System.Windows.Forms.TextBox();
             this.textBox_Origin_Node = new System.Windows.Forms.TextBox();
-            this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.radioButton_raw_encoding = new System.Windows.Forms.RadioButton();
-            this.label7 = new System.Windows.Forms.Label();
-            this.textBox_Stop_Frame_Char = new System.Windows.Forms.TextBox();
-            this.label6 = new System.Windows.Forms.Label();
-            this.textBox_Start_Frame_Char = new System.Windows.Forms.TextBox();
-            this.radioButton_base64_encoding = new System.Windows.Forms.RadioButton();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.textBox_Data_Received = new System.Windows.Forms.TextBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -72,6 +65,7 @@
             this.Combo_Port_Number = new System.Windows.Forms.ComboBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
+            this.textBox_DataRateKbps = new System.Windows.Forms.TextBox();
             this.comboBox_TxPower = new System.Windows.Forms.ComboBox();
             this.comboBox_Radio_Channel = new System.Windows.Forms.ComboBox();
             this.textBox_ACK_Received_Radio = new System.Windows.Forms.TextBox();
@@ -123,13 +117,11 @@
             this.label12 = new System.Windows.Forms.Label();
             this.textBox_Identity_NodeID = new System.Windows.Forms.TextBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.textBox_DataRateKbps = new System.Windows.Forms.TextBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox_Build_Serial_Frame.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.groupBox_Frame_Header.SuspendLayout();
-            this.groupBox5.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -176,7 +168,6 @@
             // 
             this.groupBox_Build_Serial_Frame.Controls.Add(this.groupBox6);
             this.groupBox_Build_Serial_Frame.Controls.Add(this.groupBox_Frame_Header);
-            this.groupBox_Build_Serial_Frame.Controls.Add(this.groupBox5);
             this.groupBox_Build_Serial_Frame.Location = new System.Drawing.Point(235, 6);
             this.groupBox_Build_Serial_Frame.Name = "groupBox_Build_Serial_Frame";
             this.groupBox_Build_Serial_Frame.Size = new System.Drawing.Size(518, 161);
@@ -189,7 +180,7 @@
             this.groupBox6.Controls.Add(this.textBox_Frame_Payload);
             this.groupBox6.Location = new System.Drawing.Point(184, 19);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(174, 136);
+            this.groupBox6.Size = new System.Drawing.Size(328, 136);
             this.groupBox6.TabIndex = 12;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Frame Payload (Hexa Values)";
@@ -200,7 +191,7 @@
             this.textBox_Frame_Payload.MaxLength = 256;
             this.textBox_Frame_Payload.Multiline = true;
             this.textBox_Frame_Payload.Name = "textBox_Frame_Payload";
-            this.textBox_Frame_Payload.Size = new System.Drawing.Size(162, 98);
+            this.textBox_Frame_Payload.Size = new System.Drawing.Size(316, 98);
             this.textBox_Frame_Payload.TabIndex = 6;
             this.textBox_Frame_Payload.Text = "aaaa";
             this.textBox_Frame_Payload.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_Frame_Payload_KeyPress);
@@ -297,83 +288,6 @@
             this.textBox_Origin_Node.TabIndex = 2;
             this.textBox_Origin_Node.Text = "10333";
             this.textBox_Origin_Node.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_Origin_Node_KeyPress);
-            // 
-            // groupBox5
-            // 
-            this.groupBox5.Controls.Add(this.radioButton_raw_encoding);
-            this.groupBox5.Controls.Add(this.label7);
-            this.groupBox5.Controls.Add(this.textBox_Stop_Frame_Char);
-            this.groupBox5.Controls.Add(this.label6);
-            this.groupBox5.Controls.Add(this.textBox_Start_Frame_Char);
-            this.groupBox5.Controls.Add(this.radioButton_base64_encoding);
-            this.groupBox5.Location = new System.Drawing.Point(364, 19);
-            this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(148, 136);
-            this.groupBox5.TabIndex = 0;
-            this.groupBox5.TabStop = false;
-            this.groupBox5.Text = "Frame Encoding";
-            // 
-            // radioButton_raw_encoding
-            // 
-            this.radioButton_raw_encoding.AutoSize = true;
-            this.radioButton_raw_encoding.Location = new System.Drawing.Point(6, 114);
-            this.radioButton_raw_encoding.Name = "radioButton_raw_encoding";
-            this.radioButton_raw_encoding.Size = new System.Drawing.Size(142, 17);
-            this.radioButton_raw_encoding.TabIndex = 10;
-            this.radioButton_raw_encoding.TabStop = true;
-            this.radioButton_raw_encoding.Text = "Binary raw (no encoding)";
-            this.radioButton_raw_encoding.UseVisualStyleBackColor = true;
-            this.radioButton_raw_encoding.CheckedChanged += new System.EventHandler(this.radioButton_raw_encoding_CheckedChanged);
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(56, 72);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(54, 13);
-            this.label7.TabIndex = 9;
-            this.label7.Text = "Stop Char";
-            // 
-            // textBox_Stop_Frame_Char
-            // 
-            this.textBox_Stop_Frame_Char.Enabled = false;
-            this.textBox_Stop_Frame_Char.Location = new System.Drawing.Point(28, 69);
-            this.textBox_Stop_Frame_Char.Name = "textBox_Stop_Frame_Char";
-            this.textBox_Stop_Frame_Char.Size = new System.Drawing.Size(22, 20);
-            this.textBox_Stop_Frame_Char.TabIndex = 8;
-            this.textBox_Stop_Frame_Char.Text = ">";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(56, 46);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(54, 13);
-            this.label6.TabIndex = 7;
-            this.label6.Text = "Start Char";
-            this.label6.Click += new System.EventHandler(this.label3_Click);
-            // 
-            // textBox_Start_Frame_Char
-            // 
-            this.textBox_Start_Frame_Char.Enabled = false;
-            this.textBox_Start_Frame_Char.Location = new System.Drawing.Point(28, 43);
-            this.textBox_Start_Frame_Char.MaxLength = 1;
-            this.textBox_Start_Frame_Char.Name = "textBox_Start_Frame_Char";
-            this.textBox_Start_Frame_Char.Size = new System.Drawing.Size(22, 20);
-            this.textBox_Start_Frame_Char.TabIndex = 1;
-            this.textBox_Start_Frame_Char.Text = "<";
-            // 
-            // radioButton_base64_encoding
-            // 
-            this.radioButton_base64_encoding.AutoSize = true;
-            this.radioButton_base64_encoding.Location = new System.Drawing.Point(7, 20);
-            this.radioButton_base64_encoding.Name = "radioButton_base64_encoding";
-            this.radioButton_base64_encoding.Size = new System.Drawing.Size(64, 17);
-            this.radioButton_base64_encoding.TabIndex = 0;
-            this.radioButton_base64_encoding.TabStop = true;
-            this.radioButton_base64_encoding.Text = "Base64 ";
-            this.radioButton_base64_encoding.UseVisualStyleBackColor = true;
-            this.radioButton_base64_encoding.CheckedChanged += new System.EventHandler(this.radioButton_base64_encoding_CheckedChanged);
             // 
             // groupBox4
             // 
@@ -618,6 +532,13 @@
             this.groupBox8.TabIndex = 3;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Radio Parameters (Decimal)";
+            // 
+            // textBox_DataRateKbps
+            // 
+            this.textBox_DataRateKbps.Location = new System.Drawing.Point(6, 74);
+            this.textBox_DataRateKbps.Name = "textBox_DataRateKbps";
+            this.textBox_DataRateKbps.Size = new System.Drawing.Size(121, 20);
+            this.textBox_DataRateKbps.TabIndex = 16;
             // 
             // comboBox_TxPower
             // 
@@ -1147,13 +1068,6 @@
             this.tabPage3.Text = "tabPage3";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
-            // textBox_DataRateKbps
-            // 
-            this.textBox_DataRateKbps.Location = new System.Drawing.Point(6, 74);
-            this.textBox_DataRateKbps.Name = "textBox_DataRateKbps";
-            this.textBox_DataRateKbps.Size = new System.Drawing.Size(121, 20);
-            this.textBox_DataRateKbps.TabIndex = 16;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1170,8 +1084,6 @@
             this.groupBox6.PerformLayout();
             this.groupBox_Frame_Header.ResumeLayout(false);
             this.groupBox_Frame_Header.PerformLayout();
-            this.groupBox5.ResumeLayout(false);
-            this.groupBox5.PerformLayout();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             this.groupBox3.ResumeLayout(false);
@@ -1218,13 +1130,6 @@
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.TextBox textBox_Data_To_Send;
         private System.Windows.Forms.GroupBox groupBox_Build_Serial_Frame;
-        private System.Windows.Forms.GroupBox groupBox5;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.TextBox textBox_Stop_Frame_Char;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.TextBox textBox_Start_Frame_Char;
-        private System.Windows.Forms.RadioButton radioButton_base64_encoding;
-        private System.Windows.Forms.RadioButton radioButton_raw_encoding;
         private System.Windows.Forms.GroupBox groupBox6;
         private System.Windows.Forms.GroupBox groupBox_Frame_Header;
         private System.Windows.Forms.Label label11;

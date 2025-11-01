@@ -6,6 +6,12 @@ using System.Threading.Tasks;
 
 namespace WindowsFormsApp1.Definitions
 {
+    public class serialProtocolDefines
+    {
+        public const string SERIAL_BASE64_START_FRAME_CHAR = "<";
+        public const string SERIAL_BASE64_STOP_FRAME_CHAR = ">";
+    }
+
     public class ComDef
     {
         public const int INDEX_HEADER_ORIGIN_ADDRESS_MSB       = 0;
