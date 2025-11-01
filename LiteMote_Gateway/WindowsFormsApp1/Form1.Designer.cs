@@ -80,7 +80,6 @@
             this.label29 = new System.Windows.Forms.Label();
             this.label28 = new System.Windows.Forms.Label();
             this.label27 = new System.Windows.Forms.Label();
-            this.comboBox_DataRate = new System.Windows.Forms.ComboBox();
             this.label26 = new System.Windows.Forms.Label();
             this.comboBox_Modulation = new System.Windows.Forms.ComboBox();
             this.label25 = new System.Windows.Forms.Label();
@@ -124,6 +123,7 @@
             this.label12 = new System.Windows.Forms.Label();
             this.textBox_Identity_NodeID = new System.Windows.Forms.TextBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.textBox_DataRateKbps = new System.Windows.Forms.TextBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox_Build_Serial_Frame.SuspendLayout();
@@ -599,6 +599,7 @@
             // 
             // groupBox8
             // 
+            this.groupBox8.Controls.Add(this.textBox_DataRateKbps);
             this.groupBox8.Controls.Add(this.comboBox_TxPower);
             this.groupBox8.Controls.Add(this.comboBox_Radio_Channel);
             this.groupBox8.Controls.Add(this.textBox_ACK_Received_Radio);
@@ -607,7 +608,6 @@
             this.groupBox8.Controls.Add(this.label29);
             this.groupBox8.Controls.Add(this.label28);
             this.groupBox8.Controls.Add(this.label27);
-            this.groupBox8.Controls.Add(this.comboBox_DataRate);
             this.groupBox8.Controls.Add(this.label26);
             this.groupBox8.Controls.Add(this.comboBox_Modulation);
             this.groupBox8.Controls.Add(this.label25);
@@ -696,24 +696,6 @@
             this.label27.Size = new System.Drawing.Size(89, 13);
             this.label27.TabIndex = 5;
             this.label27.Text = "Data Rate (Kbps)";
-            // 
-            // comboBox_DataRate
-            // 
-            this.comboBox_DataRate.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox_DataRate.FormattingEnabled = true;
-            this.comboBox_DataRate.Items.AddRange(new object[] {
-            "2",
-            "25",
-            "50",
-            "100",
-            "200",
-            "300",
-            "400",
-            "500"});
-            this.comboBox_DataRate.Location = new System.Drawing.Point(6, 73);
-            this.comboBox_DataRate.Name = "comboBox_DataRate";
-            this.comboBox_DataRate.Size = new System.Drawing.Size(121, 21);
-            this.comboBox_DataRate.TabIndex = 4;
             // 
             // label26
             // 
@@ -1165,6 +1147,13 @@
             this.tabPage3.Text = "tabPage3";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
+            // textBox_DataRateKbps
+            // 
+            this.textBox_DataRateKbps.Location = new System.Drawing.Point(6, 74);
+            this.textBox_DataRateKbps.Name = "textBox_DataRateKbps";
+            this.textBox_DataRateKbps.Size = new System.Drawing.Size(121, 20);
+            this.textBox_DataRateKbps.TabIndex = 16;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1292,7 +1281,6 @@
         private System.Windows.Forms.Label label26;
         private System.Windows.Forms.ComboBox comboBox_Modulation;
         private System.Windows.Forms.Label label27;
-        private System.Windows.Forms.ComboBox comboBox_DataRate;
         private System.Windows.Forms.Label label28;
         private System.Windows.Forms.Label label29;
         private System.Windows.Forms.Button button_Save_Radio_Data;
@@ -1300,6 +1288,7 @@
         private System.Windows.Forms.TextBox textBox_ACK_Received_Radio;
         private System.Windows.Forms.ComboBox comboBox_Radio_Channel;
         private System.Windows.Forms.ComboBox comboBox_TxPower;
+        private System.Windows.Forms.TextBox textBox_DataRateKbps;
     }
 }
 

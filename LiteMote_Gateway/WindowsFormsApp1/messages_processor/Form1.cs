@@ -72,9 +72,15 @@ namespace WindowsFormsApp1
 
                     comboBox_Freq_Select.SelectedIndex  = payload[0];
                     comboBox_Modulation.SelectedIndex   = payload[1];
-                    comboBox_DataRate.SelectedIndex     = payload[2];
-                    comboBox_Radio_Channel.SelectedIndex = comboBox_Radio_Channel.FindStringExact((payload[3]).ToString());
-                    comboBox_TxPower.SelectedIndex = comboBox_TxPower.FindStringExact((radConv.S2LP_From_Byte_To_dBm(payload[4])).ToString());
+
+                    UInt16 dataRate = payload[2];
+                    dataRate <<= 8;
+                    dataRate |= payload[3];
+
+                    textBox_DataRateKbps.Text = dataRate.ToString();     
+
+                    comboBox_Radio_Channel.SelectedIndex = comboBox_Radio_Channel.FindStringExact((payload[4]).ToString());
+                    comboBox_TxPower.SelectedIndex = comboBox_TxPower.FindStringExact((radConv.S2LP_From_Byte_To_dBm(payload[5])).ToString());
 
                     break;
 

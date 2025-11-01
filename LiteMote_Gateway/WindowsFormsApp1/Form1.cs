@@ -814,7 +814,10 @@ namespace WindowsFormsApp1
                 //fill payload
                 msg.Add((byte)(Convert.ToByte(comboBox_Freq_Select.SelectedIndex)));
                 msg.Add((byte)(Convert.ToByte(comboBox_Modulation.SelectedIndex)));
-                msg.Add((byte)(Convert.ToByte(comboBox_DataRate.SelectedIndex)));
+
+                UInt16 dataRate = Convert.ToUInt16(textBox_DataRateKbps.Text);
+                msg.Add((byte)((dataRate & 0xFF00) >> 8));
+                msg.Add((byte)((dataRate & 0x00FF)));
 
                 msg.Add((byte)(Convert.ToByte(comboBox_Radio_Channel.SelectedItem.ToString())));
 

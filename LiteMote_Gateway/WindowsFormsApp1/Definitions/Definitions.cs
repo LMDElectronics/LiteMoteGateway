@@ -54,7 +54,7 @@ namespace WindowsFormsApp1.Definitions
         public const int MSG_TYPE_RETRIEVE_RADIO_CONFIG_LENGTH          = 0;
 
         public const int MSG_TYPE_SEND_RADIO_CONFIG                     = 10;
-        public const int MSG_TYPE_SEND_RADIO_CONFIG_LENGTH              = 5;
+        public const int MSG_TYPE_SEND_RADIO_CONFIG_LENGTH              = 6;
 
         public const int MSG_TYPE_ACK                                   = 254;
         public const int MSG_TYPE_ACK_PAYLOAD_LENGTH                    = 2;
