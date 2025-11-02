@@ -41,6 +41,12 @@ namespace WindowsFormsApp1
         private System.Timers.Timer aTimer;
         private System.Timers.Timer bTimer;
 
+        string[] ports = SerialPort.GetPortNames();
+        public string[] serialPort_dataRate = new string[9]{"2400", "4800", "9600", "14400", "19200", "19200", "38400", "57600", "115200" };
+        public string[] serialport_bits = new string[3] {"6","7","8"};
+        public string[] serialport_stopbits = new string[2] { "One", "Two" };
+        public string[] serialport_parity = new string[3] { "None", "Odd", "Even" };
+
         public Form1()
         {
             //TEST            
@@ -48,13 +54,26 @@ namespace WindowsFormsApp1
             InitializeComponent();
         }
 
+        private void StartSerialPortComboBoxes()
+        {
+            Combo_Port_Number.Items.AddRange(ports);
+            Combo_Baud_Rate.Items.AddRange(serialPort_dataRate);
+            Combo_Data_Bits.Items.AddRange(serialport_stopbits);
+            Combo_Parity_Bits.Items.AddRange(serialport_parity);
+            Combo_Stop_Bits.Items.AddRange(serialport_stopbits);
+
+            Combo_Baud_Rate.SelectedIndex = Combo_Baud_Rate.Items.Count - 1;
+            Combo_Data_Bits.SelectedIndex = Combo_Data_Bits.Items.Count - 1;
+            Combo_Parity_Bits.SelectedIndex = 0;
+            Combo_Stop_Bits.SelectedIndex = 0;
+        }
+
         private void Form1_Load(object sender, EventArgs e)
         {
             ushort i = 0;
             double y = -30;
 
-            string[] ports = SerialPort.GetPortNames();
-            Combo_Port_Number.Items.AddRange(ports);
+            StartSerialPortComboBoxes();
 
             for (i = 0; i <= 255; i++)
             {

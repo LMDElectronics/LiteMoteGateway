@@ -436,10 +436,6 @@
             // 
             this.Combo_Parity_Bits.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.Combo_Parity_Bits.FormattingEnabled = true;
-            this.Combo_Parity_Bits.Items.AddRange(new object[] {
-            "None",
-            "Odd",
-            "Even"});
             this.Combo_Parity_Bits.Location = new System.Drawing.Point(6, 127);
             this.Combo_Parity_Bits.Name = "Combo_Parity_Bits";
             this.Combo_Parity_Bits.Size = new System.Drawing.Size(121, 21);
@@ -449,15 +445,6 @@
             // 
             this.Combo_Baud_Rate.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.Combo_Baud_Rate.FormattingEnabled = true;
-            this.Combo_Baud_Rate.Items.AddRange(new object[] {
-            "2400",
-            "4800",
-            "9600",
-            "14400",
-            "19200",
-            "38400",
-            "57600",
-            "115200"});
             this.Combo_Baud_Rate.Location = new System.Drawing.Point(6, 47);
             this.Combo_Baud_Rate.Name = "Combo_Baud_Rate";
             this.Combo_Baud_Rate.Size = new System.Drawing.Size(121, 21);
@@ -467,10 +454,6 @@
             // 
             this.Combo_Data_Bits.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.Combo_Data_Bits.FormattingEnabled = true;
-            this.Combo_Data_Bits.Items.AddRange(new object[] {
-            "6",
-            "7",
-            "8"});
             this.Combo_Data_Bits.Location = new System.Drawing.Point(6, 73);
             this.Combo_Data_Bits.Name = "Combo_Data_Bits";
             this.Combo_Data_Bits.Size = new System.Drawing.Size(121, 21);
@@ -480,9 +463,6 @@
             // 
             this.Combo_Stop_Bits.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.Combo_Stop_Bits.FormattingEnabled = true;
-            this.Combo_Stop_Bits.Items.AddRange(new object[] {
-            "One",
-            "Two"});
             this.Combo_Stop_Bits.Location = new System.Drawing.Point(6, 100);
             this.Combo_Stop_Bits.Name = "Combo_Stop_Bits";
             this.Combo_Stop_Bits.Size = new System.Drawing.Size(121, 21);

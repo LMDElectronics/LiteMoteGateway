@@ -67,6 +67,6 @@ namespace WindowsFormsApp1.Definitions
 
         public const int MAX_TX_POWER_VALUES                            = 89;
         public const int MAX_TX_POWER                                   = 14;
-        public const int MIN_TX_POWER                                   = -30;
+        public const int MIN_TX_POWER                                   = -30;       
     }
 }
