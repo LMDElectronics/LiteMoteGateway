@@ -2,4 +2,6 @@ LiteMotaGateway app:
 --------------------
 
 Falta:
-  organizar control edit para el datarate, se enviara el datarate que se encuentre en ese edit directamente al HW
+ 
+  - cambiar el edit de msg type por todos los tipos de mensajes disponibles
+  - seleccionar desde el inicio los parámetros del puerto serie (en vez de generarlos en el edit crearlos en el codigo como databindings con enums)
