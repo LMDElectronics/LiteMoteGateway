@@ -44,7 +44,7 @@ namespace WindowsFormsApp1
         string[] ports = SerialPort.GetPortNames();
         public string[] serialPort_dataRate = new string[9]{"2400", "4800", "9600", "14400", "19200", "19200", "38400", "57600", "115200" };
         public string[] serialport_bits = new string[3] {"6","7","8"};
-        public string[] serialport_stopbits = new string[2] { "One", "Two" };
+        public string[] serialport_stopbits = new string[2] { "1", "2" };
         public string[] serialport_parity = new string[3] { "None", "Odd", "Even" };
 
         public Form1()
@@ -58,7 +58,7 @@ namespace WindowsFormsApp1
         {
             Combo_Port_Number.Items.AddRange(ports);
             Combo_Baud_Rate.Items.AddRange(serialPort_dataRate);
-            Combo_Data_Bits.Items.AddRange(serialport_stopbits);
+            Combo_Data_Bits.Items.AddRange(serialport_bits);
             Combo_Parity_Bits.Items.AddRange(serialport_parity);
             Combo_Stop_Bits.Items.AddRange(serialport_stopbits);
 
